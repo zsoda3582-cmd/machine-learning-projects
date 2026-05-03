@@ -20,8 +20,6 @@
 ## 🔧 方法流程
 
 整体流程：
-
-```text
 短信文本 → 文本清洗 → TF-IDF 向量化 → Logistic Regression → threshold 调整
 文本清洗
 def clean_text(text):
