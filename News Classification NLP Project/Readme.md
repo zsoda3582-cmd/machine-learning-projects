@@ -1,4 +1,4 @@
-<img width="893" height="835" alt="image (1)" src="https://github.com/user-attachments/assets/6f0751c9-2f59-4646-98f5-906d198f68ed" />## News Classification NLP Project（新闻文本分类项目）
+## News Classification NLP Project（新闻文本分类项目）
 # 项目简介
 本项目基于 AG News 数据集， 使用 TF-IDF + 机器学习模型 实现新闻文本多分类任务。 
 分类类别包括： 
