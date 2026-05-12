@@ -1,4 +1,6 @@
 import pandas as pd
+import re
+import matplotlib.pyplot as plt
 df = pd.read_csv("IMDB Dataset.csv")
 print(df.head())
 print(df.columns)
@@ -6,14 +8,25 @@ print(df["sentiment"].value_counts())
 df["sentiment"] = df["sentiment"].map({"positive":1,"negative":0})
 print(df["sentiment"].value_counts())
 print("-"*50)
+
+
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r"<.*?>"," ",text)
+    text = re.sub(r"[^a-zA-Z]"," ",text)
+    return text
+df["review"] = df["review"].apply(clean_text)
 texts = df["review"]
 labels = df["sentiment"]
 x = texts
 y = labels
+
+
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Embedding,LSTM,Dense
+from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
 x_train,x_test,y_train,y_test = train_test_split(
     x,y,test_size = 0.2,random_state = 42,stratify = y
@@ -38,34 +51,58 @@ model.compile(
     optimizer = "adam",
     metrics = ["accuracy"]
 )
+early_stop = EarlyStopping(
+    monitor = "val_accuracy",
+    patience = 1,
+    restore_best_weights = True
+)
 history = model.fit(
     x_train_pad,
     y_train,
-    epochs=3,
+    epochs=10,
     batch_size=64,
-    validation_split=0.2
+    validation_split=0.2,
+    callbacks = [early_stop]
 )
 loss,accuracy = model.evaluate(x_test_pad,y_test)
 print("text accuracy:",accuracy)
 
-def predict_sentiment(text):
-    seq = tokenizer.texts_to_sequences([text])
-    pad = pad_sequences(seq,maxlen=200)
-    prob = model.predict(pad)[0][0]
-    if prob >= 0.5:
-        sentiment = "positive"
-    else:
-        sentiment = "negative"
-    return sentiment,prob
+print(history.history.keys())
+plt.plot(history.history["accuracy"],label = "train_accuracy")
+plt.plot(history.history["val_accuracy"],label = "val__accuracy")
+plt.xlabel("Epoch")
+plt.ylabel("Accuracy")
+plt.title("Train vs Val accuracy")
+plt.grid()
+plt.legend()
+plt.show()
 
-while True:
-    text = input("请输入文本（exit表示退出)：")
-    if text == "exit":
-        break
-    sentiment,prob = predict_sentiment(text)
-    print("预测情感：",sentiment)
-    print("positive概率：",round(prob,4))
+plt.plot(history.history["loss"],label = "train_loss")
+plt.plot(history.history["val_loss"],label = "val__loss")
+plt.xlabel("Epoch")
+plt.ylabel("loss")
+plt.title("Train vs Val loss")
+plt.grid()
+plt.legend()
+plt.show()
 
+# def predict_sentiment(text):
+#     seq = tokenizer.texts_to_sequences([text])
+#     pad = pad_sequences(seq,maxlen=200)
+#     prob = model.predict(pad)[0][0]
+#     if prob >= 0.5:
+#         sentiment = "positive"
+#     else:
+#         sentiment = "negative"
+#     return sentiment,prob
+
+# while True:
+#     text = input("请输入文本（exit表示退出)：")
+#     if text == "exit":
+#         break
+#     sentiment,prob = predict_sentiment(text)
+#     print("预测情感：",sentiment)
+#     print("positive概率：",round(prob,4))
 
 
 """
