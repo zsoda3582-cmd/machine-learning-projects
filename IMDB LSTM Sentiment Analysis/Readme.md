@@ -59,6 +59,12 @@ history = model.fit(
 - 训练数据主要是长影评，
 - 短句信息量不足。
 
+# 模型训练曲线
+Accuracy 曲线
+<img width="955" height="793" alt="accuracy_curve" src="https://github.com/user-attachments/assets/d259219e-cb3b-40d6-bd8d-8ee56458dd28" />
+Loss 曲线
+<img width="942" height="803" alt="loss_curve" src="https://github.com/user-attachments/assets/1c596924-dcfc-40c0-90ae-714724bc5d79" />
+
 # 项目收获
 通过本项目，我学习了：
 - TensorFlow 基础使用
